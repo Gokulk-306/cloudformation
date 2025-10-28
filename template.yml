@@ -1,5 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: "Create a ec2 server with sg using CF"
+Description: "Create an EC2 server with Security Group and attach to an Elastic Load Balancer using CloudFormation"
+
 Parameters:
   InstanceType:
     Type: String
@@ -9,32 +10,58 @@ Parameters:
       - t2.micro
       - t2.small
       - t2.medium
-      - t3.micro 
-    ConstraintDescription: must be a valid EC2 instance type fro the list above
+      - t3.micro
+    ConstraintDescription: must be a valid EC2 instance type from the list above
+
 Resources:
   MySecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow SSH 
+      GroupDescription: Allow SSH and HTTP
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
 
-  MyEC2Instane: 
+  MyEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref InstanceType
       ImageId: ami-0cfde0ea8edd312d4
-      # KeyName: !Ref KeyName
       SecurityGroupIds:
         - !Ref MySecurityGroup
-      Tags: 
+      Tags:
         - Key: Name
-          Value: MyEC2Instane-demo
+          Value: MyEC2Instance-demo
 
-Outputs: 
-  InstanceId: 
-    Description: The instance id of the ec2
-    Value : !Ref MyEC2Instane
+  MyElasticLoadBalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      AvailabilityZones:
+      - "us-east-2a"
+      CrossZone: true
+      Listeners:
+        - LoadBalancerPort: '80'
+          InstancePort: '80'
+          Protocol: HTTP
+      HealthCheck:
+        Target: HTTP:80/
+        HealthyThreshold: '3'
+        UnhealthyThreshold: '5'
+        Interval: '10'
+        Timeout: '5'
+      Instances:
+        - !Ref MyEC2Instance
+      Tags:
+        - Key: Name
+          Value: MyELB-demo
+
+Outputs:
+  InstanceId:
+    Description: The instance ID of the EC2 instance
+    Value: !Ref MyEC2Instance

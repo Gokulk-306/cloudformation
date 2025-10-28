@@ -67,7 +67,8 @@ Resources:
     Properties:
       Name: MyApplicationLoadBalancer
       Subnets:
-        - subnet-0862aaba6928cbc39   
+        - subnet-0862aaba6928cbc39
+        - subnet-07439b76b526e9377   
       SecurityGroups:
         - !Ref MySecurityGroup
       Scheme: internet-facing

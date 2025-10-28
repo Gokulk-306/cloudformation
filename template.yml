@@ -40,10 +40,12 @@ Resources:
           Value: MyEC2Instance-demo
 
   MyElasticLoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
     Properties:
-      AvailabilityZones:
-      - "us-east-2a"
+      Subnets:
+        - subnet-0862aaba6928cbc39
+      SecurityGroups:
+        - !Ref MySecurityGroup
       CrossZone: true
       Listeners:
         - LoadBalancerPort: '80'

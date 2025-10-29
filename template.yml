@@ -92,7 +92,7 @@ Resources:
     Type: 'AWS::S3::Bucket'
     DeletionPolicy: Retain
     Properties:
-      BucketName: CF-EXAMPLE-EAST-2
+      BucketName: cf-example-east-2
 
 Outputs:
   InstanceId:
